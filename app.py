@@ -32,7 +32,11 @@ class ShasView(MethodView):
                 url += '?'
             url += 'cachescramble=%s' % time.time()
             content = urllib.urlopen(url).read().strip()
-            if not 7 <= len(content) <= 40:
+            if content.startswith('{'):
+                # this is json
+                data = json.loads(content)
+                content = data['commit']
+            elif not 7 <= len(content) <= 40:
                 # doesn't appear to be a git sha
                 error = (
                     "Doesn't look like a sha\n (%s) on %s" %
